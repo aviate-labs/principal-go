@@ -1,38 +1,50 @@
 package principal
 
 import (
+	"crypto/sha256"
 	"encoding/base32"
+	"encoding/binary"
+	"fmt"
 	"hash/crc32"
 	"strings"
 )
 
+var encoding = base32.StdEncoding.WithPadding(base32.NoPadding)
+
 // AnonymousID is used for the anonymous caller. It can be used in call and query requests without a signature.
 var AnonymousID = Principal([]byte{0x04})
 
+// NewSelfAuthenticating returns a self authenticating principal identifier based on the given public key.
+func NewSelfAuthenticating(pub []byte) Principal {
+	hash := sha256.Sum224(pub)
+	return append(hash[:], 0x02)
+}
+
 // Principal are generic identifiers for canisters, users and possibly other concepts in the future.
-// More info: https://sdk.dfinity.org/docs/interface-spec/index.html#principal
 type Principal []byte
 
 // Decode converts a textual representation into a principal.
 func Decode(s string) (Principal, error) {
 	s = strings.ReplaceAll(s, "-", "")
-	if i := len(s) % 8; i != 0 {
-		s += strings.Repeat("=", 8-i)
-	}
 	s = strings.ToUpper(s)
-	b32, err := base32.StdEncoding.DecodeString(s)
+	b32, err := encoding.DecodeString(s)
 	if err != nil {
 		return nil, err
+	}
+	if len(b32) < 4 {
+		return nil, fmt.Errorf("invalid length: %s", b32)
+	}
+	if crc32.ChecksumIEEE(b32[4:]) != binary.BigEndian.Uint32(b32[:4]) {
+		return nil, fmt.Errorf("invalid checksum: %s", b32)
 	}
 	return b32[4:], err
 }
 
 // Encode converts the principal to its textual representation.
 func (p Principal) Encode() string {
-	h := crc32.NewIEEE()
-	h.Write(p)
-	b32 := base32.StdEncoding.EncodeToString(append(h.Sum(nil), p...))
-	b32 = strings.TrimRight(b32, "=")
+	cs := make([]byte, 4)
+	binary.BigEndian.PutUint32(cs, crc32.ChecksumIEEE(p))
+	b32 := encoding.EncodeToString(append(cs, p...))
 	b32 = strings.ToLower(b32)
 	var str string
 	for i, c := range b32 {

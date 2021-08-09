@@ -1,5 +1,8 @@
 # Principal
 
+[![Docs](https://img.shields.io/badge/docs-principal-yellow.svg)](https://sdk.dfinity.org/docs/interface-spec/index.html#principal)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/allusion-be/principal-go)
+
 Principal are generic identifiers for canisters and users.
 
 ## Usage
