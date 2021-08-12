@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	principal "github.com/allusion-be/principal-go"
+	"github.com/aviate-labs/principal-go"
 )
 
 func ExampleDecode() {

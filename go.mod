@@ -1,3 +1,3 @@
-module github.com/allusion-be/principal-go
+module github.com/aviate-labs/principal-go
 
 go 1.16
