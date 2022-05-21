@@ -55,3 +55,7 @@ func (p Principal) Encode() string {
 	}
 	return str
 }
+
+func (p Principal) String() string {
+	return p.Encode()
+}

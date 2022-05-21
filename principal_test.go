@@ -9,7 +9,7 @@ import (
 
 func ExampleDecode() {
 	p, _ := principal.Decode("em77e-bvlzu-aq")
-	fmt.Printf("%x", p)
+	fmt.Printf("%x", []byte(p))
 	// Output:
 	// abcd01
 }
