@@ -20,7 +20,7 @@ type (
 func (p Principal) AccountIdentifier(subAccount [32]byte) AccountIdentifier {
 	h := sha256.New224()
 	h.Write([]byte("\x0Aaccount-id"))
-	h.Write(p)
+	h.Write(p.Raw)
 	h.Write(subAccount[:])
 	bs := h.Sum(nil)
 
