@@ -28,20 +28,20 @@ type Principal struct {
 }
 
 // Decode converts a textual representation into a principal.
-func Decode(s string) (*Principal, error) {
+func Decode(s string) (Principal, error) {
 	s = strings.ReplaceAll(s, "-", "")
 	s = strings.ToUpper(s)
 	b32, err := encoding.DecodeString(s)
 	if err != nil {
-		return nil, err
+		return Principal{}, err
 	}
 	if len(b32) < 4 {
-		return nil, fmt.Errorf("invalid length: %s", b32)
+		return Principal{}, fmt.Errorf("invalid length: %s", b32)
 	}
 	if crc32.ChecksumIEEE(b32[4:]) != binary.BigEndian.Uint32(b32[:4]) {
-		return nil, fmt.Errorf("invalid checksum: %s", b32)
+		return Principal{}, fmt.Errorf("invalid checksum: %s", b32)
 	}
-	return &Principal{b32[4:]}, err
+	return Principal{b32[4:]}, err
 }
 
 // Encode converts the principal to its textual representation.
